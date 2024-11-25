@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-form">
+        <h1>Login</h1>
+        <form id="loginForm">
+          <div class="input-container">
+            <input type="text" id="username" required />
+            <label for="username">Username</label>
+          </div>
+          <div class="input-container">
+            <input type="password" id="password" required />
+            <label for="password">Password</label>
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+      <div class="overlay hidden">
+        <h1>Welcome, <span id="user-welcome"></span>!</h1>
+        <p>You have successfully logged in.</p>
+      </div>
+    </div>
+
+    <script>
+      const form = document.querySelector("#loginForm");
+      const usernameInput = document.querySelector("#username");
+      const passwordInput = document.querySelector("#password");
+      const button = document.querySelector('button[type="submit"]');
+      const overlay = document.querySelector(".overlay");
+      const userWelcome = document.querySelector("#user-welcome");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (username && password) {
+          // Send login request to backend
+          try {
+            const response = await fetch("/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+              // Display success overlay
+              userWelcome.textContent = data.username;
+              overlay.classList.remove("hidden");
+              form.classList.add("hidden");
+
+              // Redirect to GitHub after 2 seconds
+              setTimeout(() => {
+                window.location.href = "https://github.com/CoderAce1"; // Replace with your GitHub URL
+              }, 2000);
+            } else {
+              alert(data.message); // Show error message
+            }
+          } catch (error) {
+            console.error("Error logging in:", error);
+            alert("An error occurred. Please try again.");
+          }
+        } else {
+          alert("Please fill in both fields");
+        }
+      });
+    </script>
+  </body>
+</html>
